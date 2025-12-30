@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { base } from '$app/paths';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
@@ -39,7 +40,10 @@
 </Sidebar.Provider>
 <div style="display:none">
 	{#each locales as locale}
-		<a href={localizeHref(page.url.pathname, { locale })}>
+		{@const routeId = page.route.id || '/'}
+		{@const localized = localizeHref(routeId, { locale })}
+		{@const finalHref = localized.startsWith(base) ? localized : base + localized}
+		<a href={finalHref}>
 			{locale}
 		</a>
 	{/each}
