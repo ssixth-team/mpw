@@ -38,13 +38,3 @@
 		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>
-<div style="display:none">
-	{#each locales as locale}
-		{@const routeId = page.route.id || '/'}
-		{@const localized = localizeHref(routeId, { locale })}
-		{@const finalHref = localized.startsWith(base) ? localized : base + localized}
-		<a href={finalHref}>
-			{locale}
-		</a>
-	{/each}
-</div>
