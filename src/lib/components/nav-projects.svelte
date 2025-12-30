@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { base } from '$app/paths';
 	import { Folder, Forward, MoreHorizontal, Trash2 } from '@lucide/svelte';
 	import { type Component } from 'svelte';
 
@@ -22,7 +23,7 @@
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton>
 					{#snippet child({ props })}
-						<a href={project.url} {...props}>
+						<a href={base + project.url} {...props}>
 							<project.icon />
 							<span>{project.name}</span>
 						</a>
