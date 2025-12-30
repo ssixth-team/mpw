@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "cross-env DEBUG=0 vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -29,6 +29,7 @@
 		"autoprefixer": "^10.4.23",
 		"bits-ui": "^2.14.4",
 		"clsx": "^2.1.1",
+		"cross-env": "^10.1.0",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.13.1",

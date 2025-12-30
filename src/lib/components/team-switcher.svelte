@@ -14,7 +14,8 @@
 		}[];
 	} = $props();
 
-	let activeTeam = $state(teams[0]);
+	let selectedTeamIndex = $state(0);
+	let activeTeam = $derived(teams[selectedTeamIndex]);
 </script>
 
 <Sidebar.Menu>

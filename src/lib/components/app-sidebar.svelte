@@ -130,18 +130,18 @@
 		],
 		projects: [
 			{
-				name: 'Design Engineering',
-				url: '#',
+				name: 'Home',
+				url: '/',
 				icon: Frame
 			},
 			{
-				name: 'Sales & Marketing',
-				url: '#',
+				name: 'About',
+				url: '/about',
 				icon: PieChart
 			},
 			{
-				name: 'Travel',
-				url: '#',
+				name: 'Demo',
+				url: '/demo',
 				icon: Map
 			}
 		]

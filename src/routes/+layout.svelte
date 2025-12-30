@@ -22,13 +22,31 @@
 				<Separator orientation="vertical" class="mr-2 h-4" />
 				<Breadcrumb.Root>
 					<Breadcrumb.List>
-						<Breadcrumb.Item class="hidden md:block">
-							<Breadcrumb.Link href="#">Building Your Application</Breadcrumb.Link>
-						</Breadcrumb.Item>
-						<Breadcrumb.Separator class="hidden md:block" />
-						<Breadcrumb.Item>
-							<Breadcrumb.Page>Data Fetching</Breadcrumb.Page>
-						</Breadcrumb.Item>
+						{#if page.url.pathname === '/' || page.url.pathname === base + '/'}
+							<Breadcrumb.Item>
+								<Breadcrumb.Page>Home</Breadcrumb.Page>
+							</Breadcrumb.Item>
+						{:else if page.url.pathname.includes('/about')}
+							<Breadcrumb.Item class="hidden md:block">
+								<Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
+							</Breadcrumb.Item>
+							<Breadcrumb.Separator class="hidden md:block" />
+							<Breadcrumb.Item>
+								<Breadcrumb.Page>About</Breadcrumb.Page>
+							</Breadcrumb.Item>
+						{:else if page.url.pathname.includes('/demo')}
+							<Breadcrumb.Item class="hidden md:block">
+								<Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
+							</Breadcrumb.Item>
+							<Breadcrumb.Separator class="hidden md:block" />
+							<Breadcrumb.Item>
+								<Breadcrumb.Page>Demo</Breadcrumb.Page>
+							</Breadcrumb.Item>
+						{:else}
+							<Breadcrumb.Item>
+								<Breadcrumb.Page>Page</Breadcrumb.Page>
+							</Breadcrumb.Item>
+						{/if}
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
 			</div>
