@@ -143,6 +143,11 @@
 				name: 'Demo',
 				url: '/demo',
 				icon: Map
+			},
+			{
+				name: 'Tabulator',
+				url: '/tabulator',
+				icon: SquareTerminal
 			}
 		]
 	};

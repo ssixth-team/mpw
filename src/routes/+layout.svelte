@@ -9,6 +9,32 @@
 	import '../app.css';
 
 	let { children } = $props();
+
+	// 경로를 breadcrumb 항목으로 변환
+	const getBreadcrumbs = $derived(() => {
+		const pathname = page.url.pathname.replace(base, '') || '/';
+
+		// 홈 페이지인 경우
+		if (pathname === '/') {
+			return [{ label: 'Home', href: base + '/', isLast: true }];
+		}
+
+		// 경로를 세그먼트로 분리
+		const segments = pathname.split('/').filter(Boolean);
+
+		// breadcrumb 항목 생성
+		const breadcrumbs = [{ label: 'Home', href: base + '/', isLast: false }];
+
+		segments.forEach((segment, index) => {
+			const href = base + '/' + segments.slice(0, index + 1).join('/');
+			const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+			const isLast = index === segments.length - 1;
+
+			breadcrumbs.push({ label, href, isLast });
+		});
+
+		return breadcrumbs;
+	});
 </script>
 
 <Sidebar.Provider>
@@ -22,31 +48,18 @@
 				<Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
 				<Breadcrumb.Root>
 					<Breadcrumb.List>
-						{#if page.url.pathname === '/' || page.url.pathname === base + '/'}
-							<Breadcrumb.Item>
-								<Breadcrumb.Page>Home</Breadcrumb.Page>
+						{#each getBreadcrumbs() as crumb, index}
+							{#if index > 0}
+								<Breadcrumb.Separator class="hidden md:block" />
+							{/if}
+							<Breadcrumb.Item class={index === 0 ? 'hidden md:block' : ''}>
+								{#if crumb.isLast}
+									<Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
+								{:else}
+									<Breadcrumb.Link href={crumb.href}>{crumb.label}</Breadcrumb.Link>
+								{/if}
 							</Breadcrumb.Item>
-						{:else if page.url.pathname.includes('/about')}
-							<Breadcrumb.Item class="hidden md:block">
-								<Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-							</Breadcrumb.Item>
-							<Breadcrumb.Separator class="hidden md:block" />
-							<Breadcrumb.Item>
-								<Breadcrumb.Page>About</Breadcrumb.Page>
-							</Breadcrumb.Item>
-						{:else if page.url.pathname.includes('/demo')}
-							<Breadcrumb.Item class="hidden md:block">
-								<Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-							</Breadcrumb.Item>
-							<Breadcrumb.Separator class="hidden md:block" />
-							<Breadcrumb.Item>
-								<Breadcrumb.Page>Demo</Breadcrumb.Page>
-							</Breadcrumb.Item>
-						{:else}
-							<Breadcrumb.Item>
-								<Breadcrumb.Page>Page</Breadcrumb.Page>
-							</Breadcrumb.Item>
-						{/if}
+						{/each}
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
 			</div>
