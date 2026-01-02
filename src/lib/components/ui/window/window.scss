@@ -25,6 +25,13 @@
 		/* 애니메이션 중에도 blur 유지 */
 		animation-fill-mode: forwards;
 	}
+
+	/* Non-modal: 투명 오버레이, 부모 영역 클릭 가능 */
+	&.non-modal {
+		background-color: transparent;
+		backdrop-filter: none;
+		pointer-events: none; /* 오버레이는 클릭 불가 */
+	}
 }
 
 /* Window 컨테이너 */
@@ -39,6 +46,7 @@
 	flex-direction: column;
 	max-height: 90vh;
 	overflow: hidden;
+	pointer-events: auto; /* non-modal 오버레이에서도 윈도우는 클릭 가능 */
 
 	/* macOS 스타일 scale + fade 애니메이션 */
 	&.window-enter {

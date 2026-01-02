@@ -4,6 +4,7 @@ export interface WindowProps {
 	open: boolean;
 	title?: string;
 	variant?: WindowVariant;
+	modal?: boolean; // true: 모달 (블러 + 오버레이), false: non-modal (투명 오버레이)
 	closeOnOverlay?: boolean;
 	closeOnEscape?: boolean;
 	width?: string;

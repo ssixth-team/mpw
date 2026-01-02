@@ -2,12 +2,14 @@
   import { onMount, onDestroy } from 'svelte';
   import type { WindowProps } from './types';
   import WindowTitlebar from './WindowTitlebar.svelte';
+  import { windowStack } from './windowStack';
   import './window.scss';
 
   let {
     open = $bindable(false),
     title = '',
     variant = 'default',
+    modal = true, // true: 모달 (블러 + 오버레이), false: non-modal (투명 오버레이)
     closeOnOverlay = true,
     closeOnEscape = true,
     width = '600px',
@@ -24,7 +26,9 @@
   let isVisible = $state(false);
   let isMaximized = $state(false);
   let previousBodyOverflow = '';
-  let previousFocusElement: HTMLElement | null = null; // 포커스 복원용
+
+  // 윈도우 고유 ID 생성
+  const windowId = `window-${Math.random().toString(36).substr(2, 9)}`;
 
   // Drag state
   let isDragging = $state(false);
@@ -32,9 +36,17 @@
   let windowPosition = $state({ x: 0, y: 0 });
 
   // 애니메이션 상태
-  let overlayClass = $derived(
-    open ? (isAnimating ? 'window-overlay-enter' : '') : isAnimating ? 'window-overlay-exit' : ''
-  );
+  let overlayClass = $derived.by(() => {
+    const animationClass = open
+      ? isAnimating
+        ? 'window-overlay-enter'
+        : ''
+      : isAnimating
+        ? 'window-overlay-exit'
+        : '';
+    const modalClass = !modal ? 'non-modal' : '';
+    return `${animationClass} ${modalClass}`.trim();
+  });
 
   let windowClass = $derived(
     open ? (isAnimating ? 'window-enter' : '') : isAnimating ? 'window-exit' : ''
@@ -157,9 +169,6 @@
   // open 상태 변경 감지
   $effect(() => {
     if (open) {
-      // 현재 포커스된 요소 저장 (닫을 때 복원하기 위해)
-      previousFocusElement = document.activeElement as HTMLElement;
-
       // 위치 초기화 (항상 중앙에서 시작)
       windowPosition = { x: 0, y: 0 };
 
@@ -175,6 +184,10 @@
       // 애니메이션 완료 후
       const timer = setTimeout(() => {
         isAnimating = false;
+
+        // 윈도우 스택에 등록
+        windowStack.register(windowId, overlayElement);
+
         if (windowElement) {
           const cleanup = trapFocus(windowElement);
           return cleanup;
@@ -183,6 +196,9 @@
 
       return () => clearTimeout(timer);
     } else if (isVisible) {
+      // 윈도우 스택에서 제거 (자동으로 다른 윈도우로 포커스 이동)
+      windowStack.unregister(windowId);
+
       // 닫기 애니메이션 시작
       isAnimating = true;
 
@@ -194,11 +210,6 @@
         // 최대화 상태 리셋 (다음에 열 때 올바르게 동작하도록)
         isMaximized = false;
         // 위치 초기화는 다음에 열 때 수행 (닫기 애니메이션이 드래그한 위치에서 실행되도록)
-
-        // 이전 포커스 복원 (중첩 윈도우에서 부모로 포커스 이동)
-        if (previousFocusElement && typeof previousFocusElement.focus === 'function') {
-          previousFocusElement.focus();
-        }
       }, 200);
 
       return () => clearTimeout(timer);
