@@ -9,6 +9,29 @@
   import '../app.css';
 
   let { children } = $props();
+
+  // 라우트 정의 - 새로운 페이지 추가 시 여기에만 추가하면 됩니다
+  const routes = [
+    { path: '/about', label: 'About' },
+    { path: '/demo', label: 'Demo' },
+    { path: '/tabulator', label: 'Tabulator' },
+    { path: '/window-demo', label: 'Window Demo' },
+    { path: '/quill-demo', label: 'Quill Demo' }
+  ];
+
+  // 현재 경로에 맞는 라우트 찾기
+  const currentRoute = $derived.by(() => {
+    const pathname = page.url.pathname;
+
+    // 홈 페이지 체크
+    if (pathname === '/' || pathname === base + '/') {
+      return { path: '/', label: 'Home', isHome: true };
+    }
+
+    // 다른 라우트 찾기
+    const route = routes.find((r) => pathname.includes(r.path));
+    return route || { path: pathname, label: 'Page', isHome: false };
+  });
 </script>
 
 <Sidebar.Provider>
@@ -22,53 +45,17 @@
         <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
         <Breadcrumb.Root>
           <Breadcrumb.List>
-            {#if page.url.pathname === '/' || page.url.pathname === base + '/'}
+            {#if currentRoute.isHome}
               <Breadcrumb.Item>
                 <Breadcrumb.Page>Home</Breadcrumb.Page>
               </Breadcrumb.Item>
-            {:else if page.url.pathname.includes('/about')}
-              <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator class="hidden md:block" />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page>About</Breadcrumb.Page>
-              </Breadcrumb.Item>
-            {:else if page.url.pathname.includes('/demo')}
-              <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator class="hidden md:block" />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page>Demo</Breadcrumb.Page>
-              </Breadcrumb.Item>
-            {:else if page.url.pathname.includes('/tabulator')}
-              <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator class="hidden md:block" />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page>Tabulator</Breadcrumb.Page>
-              </Breadcrumb.Item>
-            {:else if page.url.pathname.includes('/window-demo')}
-              <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator class="hidden md:block" />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page>Window Demo</Breadcrumb.Page>
-              </Breadcrumb.Item>
-            {:else if page.url.pathname.includes('/quill-demo')}
-              <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator class="hidden md:block" />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page>Quill Demo</Breadcrumb.Page>
-              </Breadcrumb.Item>
             {:else}
+              <Breadcrumb.Item class="hidden md:block">
+                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
+              </Breadcrumb.Item>
+              <Breadcrumb.Separator class="hidden md:block" />
               <Breadcrumb.Item>
-                <Breadcrumb.Page>Page</Breadcrumb.Page>
+                <Breadcrumb.Page>{currentRoute.label}</Breadcrumb.Page>
               </Breadcrumb.Item>
             {/if}
           </Breadcrumb.List>
