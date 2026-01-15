@@ -335,6 +335,30 @@
     }
   });
 
+  // z-index 관리
+  let windowZIndex = $state(50);
+
+  $effect(() => {
+    // windowStack 구독하여 z-index 변경 감지
+    const unsubscribe = windowStack.subscribe((stack) => {
+      const window = stack.find((w) => w.id === windowId);
+      if (window) {
+        windowZIndex = window.zIndex;
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  });
+
+  // 윈도우 클릭 시 최상위로 이동
+  function handleWindowMouseDown() {
+    if (!modal && open) {
+      windowStack.bringToFront(windowId);
+    }
+  }
+
   // 스타일 계산
   let windowStyle = $derived(() => {
     if (isMaximized || variant === 'fullscreen') {
@@ -347,9 +371,12 @@
 </script>
 
 {#if isVisible}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={overlayElement}
     class="window-overlay {overlayClass}"
+    style="z-index: {windowZIndex};"
     onclick={handleOverlayClick}
     onkeydown={handleKeydown}
     role="dialog"
@@ -357,11 +384,13 @@
     aria-labelledby={title ? 'window-title' : undefined}
     tabindex="-1"
   >
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       bind:this={windowElement}
       class="window-container {windowClass} variant-{variant}"
       class:variant-fullscreen={isMaximized}
       style={windowStyle()}
+      onmousedown={handleWindowMouseDown}
     >
       <WindowTitlebar
         {title}

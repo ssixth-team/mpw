@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 interface WindowInstance {
   id: string;
   overlayElement: HTMLElement | null;
+  zIndex: number;
 }
 
 // Body scroll lock 관리를 위한 전역 상태
@@ -24,6 +25,9 @@ function unlockBodyScroll() {
   }
 }
 
+// 기본 z-index (모달 등이 이 값보다 높게 설정될 수 있음)
+const BASE_Z_INDEX = 50;
+
 function createWindowStack() {
   const { subscribe, update } = writable<WindowInstance[]>([]);
 
@@ -33,7 +37,12 @@ function createWindowStack() {
       if (isModal) {
         lockBodyScroll();
       }
-      update((stack) => [...stack, { id, overlayElement }]);
+      update((stack) => {
+        // 현재 스택에서 가장 높은 z-index 찾기
+        const maxZIndex = stack.reduce((max, window) => Math.max(max, window.zIndex), BASE_Z_INDEX);
+        // 새 윈도우는 가장 높은 z-index + 1
+        return [...stack, { id, overlayElement, zIndex: maxZIndex + 1 }];
+      });
     },
     unregister: (id: string, isModal: boolean = true) => {
       if (isModal) {
@@ -53,6 +62,30 @@ function createWindowStack() {
         }
         return filtered;
       });
+    },
+    // 특정 윈도우를 최상위로 가져오기
+    bringToFront: (id: string) => {
+      update((stack) => {
+        const window = stack.find((w) => w.id === id);
+        if (!window) return stack;
+
+        // 이미 최상위인지 확인
+        const maxZIndex = stack.reduce((max, w) => Math.max(max, w.zIndex), BASE_Z_INDEX);
+        if (window.zIndex === maxZIndex) return stack;
+
+        // 해당 윈도우의 z-index를 max + 1로 업데이트
+        return stack.map((w) => (w.id === id ? { ...w, zIndex: maxZIndex + 1 } : w));
+      });
+    },
+    // 특정 윈도우의 z-index 가져오기 (초기값 용도 등)
+    getZIndex: (id: string): number => {
+      let zIndex = BASE_Z_INDEX;
+      const unsubscribe = subscribe((stack) => {
+        const window = stack.find((w) => w.id === id);
+        if (window) zIndex = window.zIndex;
+      });
+      unsubscribe();
+      return zIndex;
     },
     clear: () => update(() => [])
   };

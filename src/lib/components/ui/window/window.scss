@@ -7,7 +7,7 @@
 .window-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  // z-index: 50;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   /* 중앙 정렬 제거 - 윈도우는 absolute positioning 사용 */
