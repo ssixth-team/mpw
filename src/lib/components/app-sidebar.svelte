@@ -5,6 +5,7 @@
     BookOpen,
     Bot,
     Command,
+    Database,
     Frame,
     GalleryVerticalEnd,
     Map,
@@ -145,6 +146,11 @@
         name: 'Demo',
         url: '/demo',
         icon: Map
+      },
+      {
+        name: 'Items',
+        url: '/items',
+        icon: Database
       },
       {
         name: 'Tabulator',
