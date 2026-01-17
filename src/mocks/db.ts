@@ -1,23 +1,9 @@
 import Dexie, { type EntityTable } from 'dexie';
+import { type Item, itemSchema } from './schemas/item.schema';
+import { type Reference, referenceSchema } from './schemas/reference.schema';
 
-export interface Item {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-}
-
-export interface Reference {
-  id: number;
-  process: 'design' | 'development' | 'testing' | 'deployment';
-  rev: 'A' | 'B' | 'C' | 'D';
-  createUser: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  createDate: string;
-}
+// Re-export types for convenience
+export type { Item, Reference };
 
 export class AppDB extends Dexie {
   items!: EntityTable<Item, 'id'>;
@@ -26,11 +12,11 @@ export class AppDB extends Dexie {
   constructor() {
     super('app-db');
     this.version(1).stores({
-      items: '++id, title, createdAt'
+      items: itemSchema
     });
     this.version(2).stores({
-      items: '++id, title, createdAt',
-      references: '++id, process, rev, createDate'
+      items: itemSchema,
+      references: referenceSchema
     });
   }
 }
