@@ -5,22 +5,14 @@ export interface CreateReferenceDto {
   process: 'design' | 'development' | 'testing' | 'deployment';
   phase: string;
   avail: 'Y' | 'N';
-  createUser: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  // createUser는 백엔드에서 JWT 토큰으로 자동 주입
 }
 
 export interface UpdateReferenceDto {
   process?: 'design' | 'development' | 'testing' | 'deployment';
   phase?: string;
   avail?: 'Y' | 'N';
-  createUser?: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  // createUser는 수정 불가
 }
 
 // References API

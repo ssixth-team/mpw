@@ -2,6 +2,7 @@
   import { createReference, type CreateReferenceDto } from '$lib/api/references';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
+  import { authStore } from '$lib/stores/auth.svelte';
 
   interface Props {
     onSuccess?: () => void;
@@ -14,9 +15,7 @@
   let process = $state<'design' | 'development' | 'testing' | 'deployment'>('design');
   let phase = $state('');
   let avail = $state<'Y' | 'N'>('Y');
-  let userId = $state('');
-  let userName = $state('');
-  let userEmail = $state('');
+  // 사용자 입력 필드 제거 - 로그인한 사용자 정보를 authStore에서 가져옴
 
   let loading = $state(false);
   let error = $state<string | null>(null);
@@ -31,18 +30,6 @@
       return;
     }
 
-    if (!userId.trim() || !userName.trim() || !userEmail.trim()) {
-      error = '사용자 정보를 모두 입력해주세요.';
-      return;
-    }
-
-    // 이메일 형식 검사
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(userEmail)) {
-      error = '올바른 이메일 형식을 입력해주세요.';
-      return;
-    }
-
     loading = true;
     error = null;
 
@@ -50,12 +37,8 @@
       const data: CreateReferenceDto = {
         process,
         phase,
-        avail,
-        createUser: {
-          id: userId,
-          name: userName,
-          email: userEmail
-        }
+        avail
+        // createUser는 백엔드에서 JWT 토큰으로 자동 주입
       };
 
       await createReference(data);
@@ -64,9 +47,6 @@
       process = 'design';
       phase = '';
       avail = 'Y';
-      userId = '';
-      userName = '';
-      userEmail = '';
 
       // 성공 콜백 호출
       onSuccess?.();
@@ -84,9 +64,6 @@
     process = 'design';
     phase = '';
     avail = 'Y';
-    userId = '';
-    userName = '';
-    userEmail = '';
     error = null;
 
     onCancel?.();
@@ -132,40 +109,26 @@
   </div>
 
   <div class="divider">
-    <span>Create User Information</span>
+    <span>Created By (로그인한 사용자)</span>
   </div>
 
-  <div class="form-group">
-    <label for="userId">User ID <span class="required">*</span></label>
-    <Input
-      id="userId"
-      type="text"
-      bind:value={userId}
-      placeholder="사용자 ID를 입력하세요"
-      disabled={loading}
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="userName">User Name <span class="required">*</span></label>
-    <Input
-      id="userName"
-      type="text"
-      bind:value={userName}
-      placeholder="사용자 이름을 입력하세요"
-      disabled={loading}
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="userEmail">User Email <span class="required">*</span></label>
-    <Input
-      id="userEmail"
-      type="email"
-      bind:value={userEmail}
-      placeholder="사용자 이메일을 입력하세요"
-      disabled={loading}
-    />
+  <div class="user-info-display">
+    {#if authStore.currentUser}
+      <div class="user-field">
+        <span class="user-label">User ID:</span>
+        <span class="user-value">{authStore.currentUser.loginId || '-'}</span>
+      </div>
+      <div class="user-field">
+        <span class="user-label">User Name:</span>
+        <span class="user-value">{authStore.currentUser.username || '-'}</span>
+      </div>
+      <div class="user-field">
+        <span class="user-label">Email:</span>
+        <span class="user-value">{authStore.currentUser.email || '-'}</span>
+      </div>
+    {:else}
+      <p class="no-user-warning">로그인이 필요합니다.</p>
+    {/if}
   </div>
 
   <div class="form-actions">
@@ -258,5 +221,41 @@
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid hsl(var(--border));
+  }
+
+  .user-info-display {
+    padding: 1rem;
+    background-color: hsl(var(--muted) / 0.5);
+    border-radius: 0.375rem;
+    border: 1px solid hsl(var(--border));
+  }
+
+  .user-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .user-field:last-child {
+    border-bottom: none;
+  }
+
+  .user-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .user-value {
+    font-size: 0.875rem;
+    color: hsl(var(--foreground));
+  }
+
+  .no-user-warning {
+    text-align: center;
+    color: hsl(var(--destructive));
+    font-size: 0.875rem;
+    margin: 0;
   }
 </style>

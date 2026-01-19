@@ -22,9 +22,20 @@ export const referenceHandlers = [
 
   // POST /api/references - 등록
   http.post('/api/references', async ({ request }) => {
-    const body = (await request.json()) as Omit<Reference, 'id' | 'createDate'>;
+    const body = (await request.json()) as Omit<Reference, 'id' | 'createDate' | 'createUser'>;
+    const authHeader = request.headers.get('Authorization');
+
+    // JWT 토큰에서 사용자 정보 추출 (Mock 환경)
+    // 실제 환경에서는 백엔드에서 JWT를 파싱하여 사용자 정보를 가져옴
+    const mockUser = {
+      id: 'testuser',
+      name: 'Test User',
+      email: 'test@example.com'
+    };
+
     const id = await db.references.add({
       ...body,
+      createUser: mockUser, // JWT에서 추출한 사용자 정보 자동 주입
       createDate: new Date().toISOString()
     } as any);
 

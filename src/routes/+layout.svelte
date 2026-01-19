@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { base } from '$app/paths';
   import { locales, localizeHref } from '$lib/paraglide/runtime';
@@ -6,6 +7,8 @@
   import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
   import { Separator } from '$lib/components/ui/separator/index.js';
   import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+  import { authStore } from '$lib/stores/auth.svelte';
+  import '$lib/config/axios.config'; // Axios interceptor 초기화
   import '../app.css';
 
   let { children } = $props();
@@ -19,7 +22,8 @@
     { path: '/references', label: 'References' },
     { path: '/tabulator', label: 'Tabulator' },
     { path: '/window-demo', label: 'Window Demo' },
-    { path: '/quill-demo', label: 'Quill Demo' }
+    { path: '/quill-demo', label: 'Quill Demo' },
+    { path: '/login', label: 'Login' }
   ];
 
   // 현재 경로에 맞는 라우트 찾기
@@ -34,6 +38,11 @@
     // 다른 라우트 찾기
     const route = routes.find((r) => pathname.includes(r.path));
     return route || { path: pathname, label: 'Page', isHome: false };
+  });
+
+  // 앱 초기화 시 localStorage에서 인증 정보 복원
+  onMount(() => {
+    authStore.loadFromStorage();
   });
 </script>
 
