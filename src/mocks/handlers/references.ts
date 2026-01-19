@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { db, type Reference } from '../db';
+import { authStore } from '$lib/stores/auth.svelte';
 
 export const referenceHandlers = [
   // GET /api/references - 목록 조회
@@ -25,17 +26,23 @@ export const referenceHandlers = [
     const body = (await request.json()) as Omit<Reference, 'id' | 'createDate' | 'createUser'>;
     const authHeader = request.headers.get('Authorization');
 
-    // JWT 토큰에서 사용자 정보 추출 (Mock 환경)
-    // 실제 환경에서는 백엔드에서 JWT를 파싱하여 사용자 정보를 가져옴
-    const mockUser = {
-      id: 'testuser',
-      name: 'Test User',
-      email: 'test@example.com'
-    };
+    // authStore에서 로그인한 사용자 정보 가져오기
+    const currentUser = authStore.currentUser;
+    const mockUser = currentUser
+      ? {
+          id: currentUser.loginId || '',
+          name: currentUser.username || '',
+          email: currentUser.email || ''
+        }
+      : {
+          id: 'anonymous',
+          name: 'Anonymous User',
+          email: 'anonymous@example.com'
+        };
 
     const id = await db.references.add({
       ...body,
-      createUser: mockUser, // JWT에서 추출한 사용자 정보 자동 주입
+      createUser: mockUser, // authStore에서 가져온 사용자 정보 주입
       createDate: new Date().toISOString()
     } as any);
 
