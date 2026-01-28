@@ -73,19 +73,7 @@
         items: [
           {
             title: 'Common Code',
-            url: '#'
-          },
-          {
-            title: 'Team',
-            url: '#'
-          },
-          {
-            title: 'Billing',
-            url: '#'
-          },
-          {
-            title: 'Limits',
-            url: '#'
+            url: '/master/common-code'
           }
         ]
       }
