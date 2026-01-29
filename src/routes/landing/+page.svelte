@@ -12,7 +12,7 @@
     ArrowRight,
     Cpu,
     BarChart3
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   const features = [
     {
