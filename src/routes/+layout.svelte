@@ -23,7 +23,9 @@
     { path: '/tabulator', label: 'Tabulator' },
     { path: '/window-demo', label: 'Window Demo' },
     { path: '/quill-demo', label: 'Quill Demo' },
-    { path: '/login', label: 'Login' }
+    { path: '/login', label: 'Login' },
+    { path: '/master/common-code', label: 'Common Code' },
+    { path: '/master/assembly', label: 'Assembly' }
   ];
 
   // 현재 경로에 맞는 라우트 찾기
