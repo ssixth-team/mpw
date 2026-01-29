@@ -8,5 +8,5 @@ All Output Language : Always respond in Korean (한국어). Even if the user ask
 2. github pages로도 deploy한다.
 
 - organization : ssixth-team
-- repository : dt-app
-- https://github.com/ssixth-team/dt-app
+- repository : mpw
+- https://github.com/ssixth-team/mpw

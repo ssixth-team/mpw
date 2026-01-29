@@ -1,4 +1,5 @@
 ## Svelte CLI
+
 ```
 T  Welcome to the Svelte CLI! (v0.11.1)
 |
@@ -27,7 +28,7 @@ o  paraglide: Do you want to include a demo?
 o  Which package manager do you want to install dependencies with?
 |  npm
 |
-|  npx sv create --template demo --types ts --add prettier eslint sveltekit-adapter="adapter:static" paraglide="languageTags:en, ko+demo:yes" --install npm dt-app
+|  npx sv create --template demo --types ts --add prettier eslint sveltekit-adapter="adapter:static" paraglide="languageTags:en, ko+demo:yes" --install npm mpw
 |
 |
 *  Successfully installed dependencies with npm
@@ -38,7 +39,7 @@ o  What's next? ---------------------------------------+
 |                                                      |
 |  📁 Project steps                                    |
 |                                                      |
-|    1: cd dt-app                                      |
+|    1: cd mpw                                      |
 |    2: npm run dev -- --open                          |
 |                                                      |
 |  To close the dev server, hit Ctrl-C                 |
