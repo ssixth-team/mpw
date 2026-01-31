@@ -39,34 +39,31 @@
 
     // 다른 라우트 찾기
     const route = routes.find((r) => pathname.includes(r.path));
-    return route ? { ...route, isHome: false } : { path: pathname, label: 'Page', isHome: false };
+    return route || { path: pathname, label: 'Page', isHome: false };
   });
 
   // 앱 초기화 시 localStorage에서 인증 정보 복원
   onMount(() => {
     authStore.loadFromStorage();
   });
-
-  // 랜딩페이지 여부 확인
-  const isLandingPage = $derived(currentRoute.isHome);
 </script>
 
-{#if isLandingPage}
-  <!-- 랜딩페이지: 사이드바와 헤더 없이 전체 화면 -->
-  {@render children()}
-{:else}
-  <!-- 일반 페이지: 사이드바와 헤더 포함 -->
-  <Sidebar.Provider>
-    <AppSidebar />
-    <Sidebar.Inset>
-      <header
-        class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
-      >
-        <div class="flex items-center gap-2 px-4">
-          <Sidebar.Trigger class="-ml-1" />
-          <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
-          <Breadcrumb.Root>
-            <Breadcrumb.List>
+<Sidebar.Provider>
+  <AppSidebar />
+  <Sidebar.Inset>
+    <header
+      class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
+    >
+      <div class="flex items-center gap-2 px-4">
+        <Sidebar.Trigger class="-ml-1" />
+        <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            {#if currentRoute.isHome}
+              <Breadcrumb.Item>
+                <Breadcrumb.Page>Home</Breadcrumb.Page>
+              </Breadcrumb.Item>
+            {:else}
               <Breadcrumb.Item class="hidden md:block">
                 <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
               </Breadcrumb.Item>
@@ -74,13 +71,13 @@
               <Breadcrumb.Item>
                 <Breadcrumb.Page>{currentRoute.label}</Breadcrumb.Page>
               </Breadcrumb.Item>
-            </Breadcrumb.List>
-          </Breadcrumb.Root>
-        </div>
-      </header>
-      <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-        {@render children()}
+            {/if}
+          </Breadcrumb.List>
+        </Breadcrumb.Root>
       </div>
-    </Sidebar.Inset>
-  </Sidebar.Provider>
-{/if}
+    </header>
+    <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
+      {@render children()}
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>
