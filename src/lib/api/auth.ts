@@ -19,12 +19,12 @@ interface SpringLoginResponse {
 
 /**
  * 로그인
- * Spring의 /api/auth/login을 호출하고 사용자 정보를 가져옴
+ * Spring의 /auth/login을 호출하고 사용자 정보를 가져옴
  */
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   // 1. Spring 로그인 API 호출
-  console.log('[Auth] Requesting login to /api/auth/login');
-  const loginResponse = await axios.post<SpringLoginResponse>('/api/auth/login', credentials);
+  console.log('[Auth] Requesting login to /auth/login');
+  const loginResponse = await axios.post<SpringLoginResponse>('/auth/login', credentials);
   console.log('[Auth] Login response data:', loginResponse.data);
 
   const { accessToken, user } = loginResponse.data;
@@ -32,12 +32,12 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   // 2. 백엔드에서 user 정보를 주면 바로 사용, 아니면 별도 조회
   let account = user;
   if (!account) {
-    console.warn('[Auth] User info missing in login response. Fetching from /api/auth/me');
+    console.warn('[Auth] User info missing in login response. Fetching from /auth/me');
     try {
-      const userResponse = await axios.get<Account>('/api/auth/me', {
+      const userResponse = await axios.get<Account>('/auth/me', {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
-      console.log('[Auth] /api/auth/me response:', userResponse.data);
+      console.log('[Auth] /auth/me response:', userResponse.data);
       account = userResponse.data;
     } catch (error) {
       console.error('[Auth] Failed to fetch user info:', error);
@@ -72,7 +72,7 @@ export const logout = async (): Promise<void> => {
  */
 export const validateToken = async (token: string): Promise<boolean> => {
   try {
-    await axios.get('/api/auth/me', {
+    await axios.get('/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     return true;
@@ -86,6 +86,6 @@ export const validateToken = async (token: string): Promise<boolean> => {
  */
 export const getCurrentUser = async (token?: string): Promise<Account> => {
   const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-  const response = await axios.get<Account>('/api/auth/me', config);
+  const response = await axios.get<Account>('/auth/me', config);
   return response.data;
 };

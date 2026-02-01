@@ -6,15 +6,15 @@
 import { http, passthrough } from 'msw';
 
 export const authHandlers = [
-  // POST /api/auth/login - 로그인
-  http.post('/api/auth/login', () => passthrough()),
+  // POST /auth/login - 로그인
+  http.post('/auth/login', () => passthrough()),
 
-  // POST /api/auth/logout - 로그아웃
-  http.post('/api/auth/logout', () => passthrough()),
+  // POST /auth/logout - 로그아웃
+  http.post('/auth/logout', () => passthrough()),
 
-  // GET /api/auth/validate - 토큰 유효성 검증
-  http.get('/api/auth/validate', () => passthrough()),
+  // GET /auth/validate - 토큰 유효성 검증
+  http.get('/auth/validate', () => passthrough()),
 
-  // GET /api/auth/me - 현재 사용자 정보 조회
-  http.get('/api/auth/me', () => passthrough())
+  // GET /auth/me - 현재 사용자 정보 조회
+  http.get('/auth/me', () => passthrough())
 ];
