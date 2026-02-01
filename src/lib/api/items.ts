@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Item } from '$lib/../mocks/db';
+import type { Item } from '$lib/mocks/db';
 
 export interface CreateItemDto {
   title: string;

@@ -50,9 +50,42 @@
     return route || { path: pathname, label: 'Page', isHome: false };
   });
 
-  // 앱 초기화 시 localStorage에서 인증 정보 복원
-  onMount(() => {
+  import { getCurrentUser } from '$lib/api/auth';
+
+  // 앱 초기화 시 인증 정보 동기화 (LocalStorage + Cookie)
+  onMount(async () => {
+    // 1. 기존 LocalStorage 복원
     authStore.loadFromStorage();
+
+    // 2. Server-side Cookie 확인 및 동기화 (SSO/Login Page 연동)
+    if (typeof document !== 'undefined') {
+      const getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+      };
+
+      const authCookie = getCookie('Authorization');
+      if (authCookie) {
+        try {
+          // URL Decode 및 Bearer 제거
+          const decodedValue = decodeURIComponent(authCookie);
+          const token = decodedValue.startsWith('Bearer ')
+            ? decodedValue.substring(7)
+            : decodedValue;
+
+          // 토큰이 있고, 현재 스토어와 다르다면 갱신
+          if (token && token !== authStore.token) {
+            console.log('[Auth] Syncing from cookie...');
+            const user = await getCurrentUser(token);
+            authStore.setAuth(user, token);
+            console.log('[Auth] Synced successfully:', user.username);
+          }
+        } catch (e) {
+          console.error('[Auth] Failed to sync auth from cookie', e);
+        }
+      }
+    }
   });
 </script>
 

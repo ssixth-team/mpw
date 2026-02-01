@@ -35,6 +35,18 @@ class AuthStore {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('current_user');
+      // 쿠키 삭제 (Authorization)
+      document.cookie = 'Authorization=; Path=/; Max-Age=0;';
+    }
+  }
+
+  /**
+   * 로그아웃
+   */
+  logout() {
+    this.clearAuth();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
     }
   }
 

@@ -83,8 +83,8 @@
 
     <div class="demo-credentials">
       <p class="demo-title">테스트 계정:</p>
-      <p class="demo-info">ID: <strong>testuser</strong> / PW: <strong>password123</strong></p>
-      <p class="demo-info">ID: <strong>admin</strong> / PW: <strong>admin123</strong></p>
+      <p class="demo-info">ID: <strong>admin</strong> / PW: <strong>????</strong></p>
+      <p class="demo-info">ID: <strong>user</strong> / PW: <strong>????</strong></p>
     </div>
   </div>
 </div>

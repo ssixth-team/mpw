@@ -3,7 +3,7 @@
   import 'tabulator-tables/dist/css/tabulator_semanticui.min.css';
   import { onMount } from 'svelte';
   import { getReferences, type CreateReferenceDto } from '$lib/api/references';
-  import type { Reference } from '$lib/../mocks/db';
+  import type { Reference } from '$lib/mocks/db';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Plus, RefreshCw } from '@lucide/svelte';
   import { Window } from '$lib/components/ui/window';

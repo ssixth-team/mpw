@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Reference } from '$lib/../mocks/db';
+import type { Reference } from '$lib/mocks/db';
 
 export interface CreateReferenceDto {
   process: string; // 사용자 입력 허용

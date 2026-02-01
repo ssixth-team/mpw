@@ -6,7 +6,10 @@
     updateReference,
     deleteReference
   } from '$lib/api/references';
-  import type { Reference } from '$lib/../mocks/db';
+  import type { MPW_REF as Reference } from '../../mocks/db';
+
+  import { authStore } from '$lib/stores/auth.svelte';
+  import type { Account } from '$lib/schemas/account.schema';
 
   let references = $state<Reference[]>([]);
   let loading = $state(false);
@@ -14,11 +17,33 @@
 
   // 폼 상태
   let process = $state<'design' | 'development' | 'testing' | 'deployment'>('design');
+  let type = $state<'local' | 'official'>('local');
   let phase = $state('');
   let avail = $state<'Y' | 'N'>('Y');
-  let userId = $state('');
-  let userName = $state('');
-  let userEmail = $state('');
+
+  // 로그인한 사용자 정보로 초기화
+  let createUser = $state<Account>({
+    id: null,
+    loginId: authStore.currentUser?.loginId || '',
+    username: authStore.currentUser?.username || '',
+    email: authStore.currentUser?.email || '',
+    password: null,
+    createDate: null,
+    updateDate: null,
+    latestLoginDate: null,
+    deptName: null,
+    deptId: null
+  });
+
+  // authStore가 비동기로 로드될 수 있으므로, 값이 들어오면 createUser 업데이트
+  $effect(() => {
+    if (authStore.currentUser && editingId === null && !createUser.loginId) {
+      createUser.loginId = authStore.currentUser.loginId || '';
+      createUser.username = authStore.currentUser.username || '';
+      createUser.email = authStore.currentUser.email || '';
+    }
+  });
+
   let editingId = $state<number | null>(null);
 
   // 목록 조회
@@ -39,7 +64,12 @@
   async function handleSubmit(e: Event) {
     e.preventDefault();
 
-    if (!userId.trim() || !userName.trim() || !userEmail.trim() || !phase.trim()) {
+    if (
+      !createUser.loginId?.trim() ||
+      !createUser.username?.trim() ||
+      !createUser.email?.trim() ||
+      !phase.trim()
+    ) {
       error = '모든 필수 정보를 입력해주세요.';
       return;
     }
@@ -51,12 +81,8 @@
       const data = {
         process,
         phase,
-        avail,
-        createUser: {
-          id: userId,
-          name: userName,
-          email: userEmail
-        }
+        type,
+        avail
       };
 
       if (editingId !== null) {
@@ -67,14 +93,16 @@
         await createReference(data);
       }
 
-      // 폼 초기화
+      // 폼 초기화 (사용자 정보는 유지)
       process = 'design';
       phase = '';
       avail = 'Y';
-      userId = '';
-      userName = '';
-      userEmail = '';
       editingId = null;
+
+      // 사용자 정보 리셋이 필요하다면 아래 주석 해제 (단, 로그인된 사용자 정보 유지가 더 자연스러울 수 있음)
+      // createUser.loginId = authStore.currentUser?.loginId || '';
+      // createUser.username = authStore.currentUser?.username || '';
+      // createUser.email = authStore.currentUser?.email || '';
 
       // 목록 새로고침
       await loadReferences();
@@ -89,12 +117,15 @@
   // 수정 모드로 전환
   function handleEdit(reference: Reference) {
     editingId = reference.id;
-    process = reference.process;
+    process = reference.process as 'design' | 'development' | 'testing' | 'deployment';
     phase = reference.phase;
     avail = reference.avail;
-    userId = reference.createUser.id;
-    userName = reference.createUser.name;
-    userEmail = reference.createUser.email;
+    type = reference.type || 'local';
+
+    createUser.id = reference.createUser.id;
+    createUser.loginId = reference.createUser.loginId;
+    createUser.username = reference.createUser.username;
+    createUser.email = reference.createUser.email;
   }
 
   // 수정 취소
@@ -103,9 +134,11 @@
     process = 'design';
     phase = '';
     avail = 'Y';
-    userId = '';
-    userName = '';
-    userEmail = '';
+
+    // 원래 로그인한 사용자 정보로 복구
+    createUser.loginId = authStore.currentUser?.loginId || '';
+    createUser.username = authStore.currentUser?.username || '';
+    createUser.email = authStore.currentUser?.email || '';
   }
 
   // 삭제
@@ -187,7 +220,7 @@
       <input
         id="userId"
         type="text"
-        bind:value={userId}
+        bind:value={createUser.loginId}
         placeholder="사용자 ID를 입력하세요"
         disabled={loading}
       />
@@ -198,7 +231,7 @@
       <input
         id="userName"
         type="text"
-        bind:value={userName}
+        bind:value={createUser.username}
         placeholder="사용자 이름을 입력하세요"
         disabled={loading}
       />
@@ -209,7 +242,7 @@
       <input
         id="userEmail"
         type="email"
-        bind:value={userEmail}
+        bind:value={createUser.email}
         placeholder="사용자 이메일을 입력하세요"
         disabled={loading}
       />
@@ -252,7 +285,7 @@
               <h4>Created By</h4>
               <div class="user-details">
                 <p><strong>ID:</strong> {reference.createUser.id}</p>
-                <p><strong>Name:</strong> {reference.createUser.name}</p>
+                <p><strong>Name:</strong> {reference.createUser.username}</p>
                 <p><strong>Email:</strong> {reference.createUser.email}</p>
               </div>
             </div>

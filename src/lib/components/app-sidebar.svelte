@@ -12,7 +12,8 @@
     Map,
     PieChart,
     Settings2,
-    SquareTerminal
+    SquareTerminal,
+    LogIn
   } from '@lucide/svelte';
   import NavMain from './nav-main.svelte';
   import NavProjects from './nav-projects.svelte';
@@ -21,13 +22,18 @@
   import ThemeSelector from './theme-selector.svelte';
   import { Separator } from '$lib/components/ui/separator/index.js';
 
+  import { authStore } from '$lib/stores/auth.svelte';
+
   // This is sample data.
+  let user = $derived({
+    username: authStore.currentUser?.username || 'Guest',
+    email: authStore.currentUser?.email || 'guest@example.com',
+    avatar: '',
+    loginId: authStore.currentUser?.loginId || 'Guest'
+  });
+
   const data = {
-    user: {
-      name: 'shadcn',
-      email: 'm@example.com',
-      avatar: ''
-    },
+    // user removed from here
     teams: [
       {
         name: 'Acme Inc',
@@ -144,7 +150,22 @@
   <Sidebar.Footer>
     <ThemeSelector />
     <Separator class="my-2" />
-    <NavUser user={data.user} />
+    {#if authStore.isAuthenticated}
+      <NavUser {user} />
+    {:else}
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton>
+            {#snippet child({ props })}
+              <a href="/login" {...props}>
+                <LogIn />
+                <span>Log in</span>
+              </a>
+            {/snippet}
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    {/if}
   </Sidebar.Footer>
   <Sidebar.Rail />
 </Sidebar.Root>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { getItems, createItem, updateItem, deleteItem } from '$lib/api/items';
-  import type { Item } from '$lib/../mocks/db';
+  import type { Item } from '$lib/mocks/db';
 
   let items = $state<Item[]>([]);
   let loading = $state(false);

@@ -10,7 +10,7 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { authStore } from '$lib/stores/auth.svelte';
-  import type { Reference } from '$lib/../mocks/schemas/reference.schema';
+  import type { Reference } from '$lib/mocks/schemas/reference.schema';
 
   interface Props {
     editMode?: boolean;
