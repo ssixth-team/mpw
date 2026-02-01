@@ -1,4 +1,4 @@
-import type { Account } from '$lib/../mocks/schemas/account';
+import type { Account } from '$lib/schemas/account.schema';
 
 /**
  * 로그인 요청 DTO

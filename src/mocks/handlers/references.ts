@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { db, type Reference } from '../db';
+import { db, type MPW_REF } from '../db';
 import { authStore } from '$lib/stores/auth.svelte';
 
 export const referenceHandlers = [
@@ -23,7 +23,7 @@ export const referenceHandlers = [
 
   // POST /api/references - 등록
   http.post('/api/references', async ({ request }) => {
-    const body = (await request.json()) as Omit<Reference, 'id' | 'createDate' | 'createUser'>;
+    const body = (await request.json()) as Omit<MPW_REF, 'id' | 'createDate' | 'createUser'>;
     const authHeader = request.headers.get('Authorization');
 
     // authStore에서 로그인한 사용자 정보 가져오기
@@ -53,7 +53,7 @@ export const referenceHandlers = [
   // PUT /api/references/:id - 수정
   http.put('/api/references/:id', async ({ params, request }) => {
     const { id } = params;
-    const body = (await request.json()) as Partial<Omit<Reference, 'id' | 'createDate'>>;
+    const body = (await request.json()) as Partial<Omit<MPW_REF, 'id' | 'createDate'>>;
 
     const existingReference = await db.references.get(Number(id));
     if (!existingReference) {

@@ -5,7 +5,7 @@
 
 import { http, HttpResponse } from 'msw';
 import type { LoginRequest, LoginResponse } from '$lib/types/auth.types';
-import type { Account } from '../schemas/account';
+import type { Account } from '$lib/schemas/account.schema';
 
 // Mock 사용자 데이터
 const mockUsers: Account[] = [

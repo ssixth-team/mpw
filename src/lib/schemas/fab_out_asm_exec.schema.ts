@@ -1,4 +1,4 @@
-import { type Account } from './account';
+import { type Account } from './account.schema';
 import type { MPW_FAB_OUT_ASM_DECISION } from '$lib/schemas/fab_out_asm_decision.schema';
 
 export interface MPW_FAB_OUT_ASM_EXEC {

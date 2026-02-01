@@ -1,4 +1,4 @@
-import { type Account } from './account';
+import { type Account } from './account.schema';
 import { type MPW_BUMP } from '$lib/schemas/bump.schema';
 import { type MPW_REF } from '$lib/schemas/reference.schema';
 import type { MPW_FAB_OUT_MOTHER_LOT } from '$lib/schemas/fab_out_mother_lot.schema';
@@ -13,7 +13,7 @@ export interface MPW_FAB_OUT {
   beol: string;
   bump: MPW_BUMP;
   bumpTag: string;
-  fabPartId:string;
+  fabPartId: string;
   avail: 'Y' | 'N';
   createUser: Account;
   createDate: string;

@@ -3,7 +3,7 @@
  * Svelte 5 runes 기반 전역 상태 관리
  */
 
-import type { Account } from '$lib/../mocks/schemas/account';
+import type { Account } from '$lib/schemas/account.schema';
 
 class AuthStore {
   currentUser = $state<Account | null>(null);

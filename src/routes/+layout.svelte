@@ -15,6 +15,7 @@
 
   // 라우트 정의 - 새로운 페이지 추가 시 여기에만 추가하면 됩니다
   const routes = [
+    { path: '/', label: 'Home', isHome: true },
     { path: '/about', label: 'About' },
     { path: '/demo', label: 'Demo' },
     { path: '/items', label: 'Items' },
@@ -33,12 +34,19 @@
     const pathname = page.url.pathname;
 
     // 홈 페이지 체크
-    if (pathname === '/' || pathname === base + '/') {
-      return { path: '/', label: 'Home', isHome: true };
-    }
+    // if (pathname === '/mpw' || pathname === base + '/mpw') {
+    //   return { path: '/references', label: 'References' };
+    // }
 
     // 다른 라우트 찾기
-    const route = routes.find((r) => pathname.includes(r.path));
+    const route = routes.find((r) => {
+      if (r.path === '/') {
+        // 루트 경로는 정확히 일치할 때만
+        return pathname === '/';
+      }
+      // 다른 경로는 해당 경로로 시작하는지 확인
+      return pathname.startsWith(r.path);
+    });
     return route || { path: pathname, label: 'Page', isHome: false };
   });
 
@@ -65,7 +73,7 @@
               </Breadcrumb.Item>
             {:else}
               <Breadcrumb.Item class="hidden md:block">
-                <Breadcrumb.Link href={base + '/'}>Home</Breadcrumb.Link>
+                <Breadcrumb.Link href={'/'}>Home</Breadcrumb.Link>
               </Breadcrumb.Item>
               <Breadcrumb.Separator class="hidden md:block" />
               <Breadcrumb.Item>

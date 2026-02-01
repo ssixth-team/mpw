@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
-import { type Item, itemSchema } from './schemas/item.schema';
-import { type Reference, referenceSchema } from './schemas/reference.schema';
-import { type Code, codeSchema } from './schemas/code.schema';
+import { type Item, itemSchema } from '$lib/schemas/item.schema';
+import { type MPW_REF, refSchema } from '$lib/schemas/reference.schema';
+import { type Code, codeSchema } from '$lib/schemas/code.schema';
 import type { MPW_BUMP } from '$lib/schemas/bump.schema';
 import type { MPW_CORNER } from '$lib/schemas/corner.schema';
 import type { MPW_STATUS } from '$lib/schemas/status.schema';
@@ -14,7 +14,7 @@ import type { MPW_ASM_RESULT_STATUS } from '$lib/schemas/asm_result_status.schem
 // Re-export types for convenience
 export type {
   Item,
-  Reference,
+  MPW_REF,
   Code,
   MPW_BUMP,
   MPW_CORNER,
@@ -28,7 +28,7 @@ export type {
 
 export class AppDB extends Dexie {
   items!: EntityTable<Item, 'id'>;
-  references!: EntityTable<Reference, 'id'>;
+  references!: EntityTable<MPW_REF, 'id'>;
   codes!: EntityTable<Code, 'id'>;
   bumps!: EntityTable<MPW_BUMP, 'code'>;
   corners!: EntityTable<MPW_CORNER, 'code'>;
@@ -46,22 +46,22 @@ export class AppDB extends Dexie {
     });
     this.version(2).stores({
       items: itemSchema,
-      references: referenceSchema
+      references: refSchema
     });
     // type 필드 추가를 위한 버전 업그레이드
     this.version(3).stores({
       items: itemSchema,
-      references: referenceSchema
+      references: refSchema
     });
     this.version(4).stores({
       items: itemSchema,
-      references: referenceSchema,
+      references: refSchema,
       codes: codeSchema
     });
     // Common Code 테이블 추가
     this.version(5).stores({
       items: itemSchema,
-      references: referenceSchema,
+      references: refSchema,
       codes: codeSchema,
       bumps: 'code, name, useTag, avail',
       corners: 'code, name, avail',
@@ -71,7 +71,7 @@ export class AppDB extends Dexie {
     // Assembly 테이블 추가
     this.version(6).stores({
       items: itemSchema,
-      references: referenceSchema,
+      references: refSchema,
       codes: codeSchema,
       bumps: 'code, name, useTag, avail',
       corners: 'code, name, avail',

@@ -1,4 +1,4 @@
-import { type Account } from './account';
+import { type Account } from './account.schema';
 
 export interface MPW_REF_FILE {
   id: number;
