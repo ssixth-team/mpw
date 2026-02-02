@@ -9,8 +9,35 @@ class AuthStore {
   currentUser = $state<Account | null>(null);
   token = $state<string | null>(null);
 
-  // 인증 여부를 자동으로 계산
-  isAuthenticated = $derived(this.currentUser !== null && this.token !== null);
+  // 인증 여부를 자동으로 계산 (토큰이 있고 만료되지 않아야 함)
+  isAuthenticated = $derived(
+    this.currentUser !== null && this.token !== null && !this.isTokenExpired(this.token)
+  );
+
+  /**
+   * JWT 토큰 만료 여부 확인
+   * 외부 라이브러리 없이 Base64 디코딩으로 exp claim 확인
+   */
+  isTokenExpired(token: string): boolean {
+    if (!token) return true;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const { exp } = JSON.parse(jsonPayload);
+
+      // exp는 초 단위, Date.now()는 밀리초 단위
+      return Date.now() >= exp * 1000;
+    } catch (e) {
+      console.error('Failed to parse token expiration:', e);
+      return true; // 파싱 실패 시 만료된 것으로 간주
+    }
+  }
 
   /**
    * 인증 정보 설정 및 localStorage에 저장
@@ -61,6 +88,13 @@ class AuthStore {
 
     if (token && userStr) {
       try {
+        // 토큰 만료 체크 후 복원
+        if (this.isTokenExpired(token)) {
+          console.warn('[Auth] Stored token is expired. Clearing auth.');
+          this.clearAuth();
+          return;
+        }
+
         this.token = token;
         this.currentUser = JSON.parse(userStr);
       } catch (error) {

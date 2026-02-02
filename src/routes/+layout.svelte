@@ -50,6 +50,7 @@
     return route || { path: pathname, label: 'Page', isHome: false };
   });
 
+  import { goto } from '$app/navigation';
   import { getCurrentUser } from '$lib/api/auth';
 
   // 앱 초기화 시 인증 정보 동기화 (LocalStorage + Cookie)
@@ -84,6 +85,22 @@
         } catch (e) {
           console.error('[Auth] Failed to sync auth from cookie', e);
         }
+      }
+    }
+  });
+
+  // Navigation Guard
+  $effect(() => {
+    const publicPaths = ['/login', '/sso/login'];
+    const path = page.url.pathname;
+
+    // 공개 경로가 아닌 경우 인증 체크
+    if (!publicPaths.some((p) => path.startsWith(p))) {
+      // 인증되지 않았거나 토큰이 만료된 경우
+      if (!authStore.isAuthenticated) {
+        console.warn('[Auth] Unauthorized access to protected route. Redirecting to login.');
+        // 현재 경로를 redirect_uri로 전달 (선택 사항)
+        goto(`/login?redirect_uri=${encodeURIComponent(path)}`);
       }
     }
   });
